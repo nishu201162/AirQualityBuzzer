@@ -208,14 +208,22 @@ public class FunctionalitiesActivity extends AppCompatActivity {
         Intent intent = null;
         switch (item.getItemId()) {
             case R.id.userProfileActivity:
-                intent = new Intent(getApplicationContext(), UserProfile.class);
-                startActivity(intent);
+                Toast.makeText(this, "Profile Acitivity Not added yet", Toast.LENGTH_SHORT).show();
+                //intent = new Intent(getApplicationContext(), UserProfile.class);
+                //startActivity(intent);
                 break;
 
             case R.id.signOutUser:
                 FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
                 firebaseAuth.signOut();
                 Toast.makeText(this, "SignOut Successfully", Toast.LENGTH_SHORT).show();
+                
+                SharedPreferences sharedPreferences = getSharedPreferences("User_Data", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("UserType", "NormalUser");
+                editor.putString("Email", " ");
+                editor.apply();
+                
                 intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 finish();

@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class LoginActivity extends Activity {
     private GoogleSignInClient googleSignInClient;
 
     private EditText userNameEditText, passwordEditText;
+    private ProgressBar progressBar;
 
 
     private String userName, passWord;
@@ -52,6 +54,10 @@ public class LoginActivity extends Activity {
 
         FirebaseApp.initializeApp(this);
         firebaseAuth = FirebaseAuth.getInstance();
+
+        userNameEditText = findViewById(R.id.userEmail);
+        passwordEditText = findViewById(R.id.userPassword);
+        progressBar = findViewById(R.id.LoginProgressBar);
 
         //Google sign In Integration
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -71,9 +77,6 @@ public class LoginActivity extends Activity {
         //Toast toast = Toast.makeText(LoginActivity.this, "Password Doesn't Matches", Toast.LENGTH_SHORT);
         //toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
         //toast.show();
-
-        userNameEditText = findViewById(R.id.userEmail);
-        passwordEditText = findViewById(R.id.userPassword);
     }
 
     /*
@@ -121,12 +124,13 @@ public class LoginActivity extends Activity {
 
     //remaining check username is valid and username password matches;
     private boolean setErrorOnField() {
+        progressBar.setVisibility(View.VISIBLE);
         userName = userNameEditText.getText().toString().trim();
         passWord = passwordEditText.getText().toString().trim();
 
         //check whether the user name matches with the EMAIL type
 
-        if (userName.equals(EMPTYSTRING) || Patterns.EMAIL_ADDRESS.matcher(userName).matches()) {
+        if (userName.equals(EMPTYSTRING) || !Patterns.EMAIL_ADDRESS.matcher(userName).matches()) {
             userNameEditText.setError("Incorrect Email Address");
             userNameEditText.requestFocus();
             return true;
@@ -162,32 +166,37 @@ public class LoginActivity extends Activity {
             editor.apply();
 
             startActivityIntent();
-        } else if (!setErrorOnField() && loginSuccesFull()) {
-            editor.putString("UserType", "BetaUser");
-            editor.putString("Email", userName);
-            editor.apply();
-
-            startActivityIntent();
+        } else if (!setErrorOnField()) {
+            loginSuccessFull();
         }
     }
 
-    private boolean loginSuccesFull() {
+    private void loginSuccessFull() {
         //check that is user a valid user
-        isLoginSuccess = false;
         firebaseAuth.signInWithEmailAndPassword(userName, passWord)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            isLoginSuccess = true;
-                            Toast.makeText(LoginActivity.this, "Login SuccessFull", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Login UnSuucessFull\nIncorrect Login Details", Toast.LENGTH_LONG).show();
-                            userNameEditText.requestFocus();
-                        }
-                    }
-                });
-        return isLoginSuccess;
+        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    isLoginSuccess = true;
+                    Toast.makeText(LoginActivity.this, "Login SuccessFull", Toast.LENGTH_SHORT).show();
+                    openLoginSuccessfullPage();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Login UnSuucessFull\nIncorrect Login Details", Toast.LENGTH_LONG).show();
+                    userNameEditText.requestFocus();
+                }
+            }
+        });
+    }
+
+    private void openLoginSuccessfullPage() {
+        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("UserType", "BetaUser");
+        editor.putString("Email", userName);
+        editor.apply();
+        progressBar.setVisibility(View.GONE);
+        startActivityIntent();
     }
 
     //remaining register the user

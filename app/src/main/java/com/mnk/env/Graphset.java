@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -65,7 +66,7 @@ public class Graphset extends AppCompatActivity {
     boolean con=true;
 
     private ArrayList<String> xAxisDate;
-    private String stringValue;
+    private String stringValue, descriptionText;
 
     private static final float TOTAL_MEMORY = 16.0f;
     private static final float LIMIT_MAX_MEMORY = 12.0f;
@@ -96,7 +97,7 @@ public class Graphset extends AppCompatActivity {
         feedMultiple();
         mydate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
 
-        Graphset.ClientClass clientClass=new Graphset.ClientClass(connectbt);
+        Graphset.ClientClass clientClass = new Graphset.ClientClass(connectbt);
         clientClass.start();
         status.setText("Connecting");
     }
@@ -336,7 +337,10 @@ public class Graphset extends AppCompatActivity {
 
     private void setUpChart() {
         // enable/disable description text
-        mChart.getDescription().setEnabled(false);
+        mChart.getDescription().setEnabled(true);
+        Description description = new Description();
+        description.setText(descriptionText);
+        mChart.setDescription(description);
         // enable touch gestures
         mChart.setTouchEnabled(true);
         // if disabled, scaling can be done on x- and y-axis separately
@@ -471,6 +475,7 @@ public class Graphset extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dgas="pm1";
+                descriptionText = "PM 1";
                 mChart.clear();
                 mChart = (LineChart) findViewById(R.id.lineChart);
                 LineData data = new LineData();
@@ -487,6 +492,7 @@ public class Graphset extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dgas="pm2.5";
+                descriptionText = "PM 2.5";
                 mChart.clear();
                 mChart = (LineChart) findViewById(R.id.lineChart);
                 LineData data = new LineData();
@@ -501,6 +507,7 @@ public class Graphset extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dgas="pm10";
+                descriptionText = "PM 10";
                 mChart.clear();
                 mChart = (LineChart) findViewById(R.id.lineChart);
                 LineData data = new LineData();
@@ -516,6 +523,7 @@ public class Graphset extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dgas="no2";
+                descriptionText = "NO2";
                 mChart.clear();
                 mChart = (LineChart) findViewById(R.id.lineChart);
                 LineData data = new LineData();
@@ -528,6 +536,7 @@ public class Graphset extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dgas="co";
+                descriptionText = "CO";
                 //data = new LineData();
                 mChart.clear();
                 mChart = (LineChart) findViewById(R.id.lineChart);
@@ -542,6 +551,7 @@ public class Graphset extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dgas="co2";
+                descriptionText = "CO2";
                 mChart.clear();
                 mChart = (LineChart) findViewById(R.id.lineChart);
                 LineData data = new LineData();

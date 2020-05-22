@@ -43,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        findViewsById();
         FirebaseApp.initializeApp(this);
         dobET.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,8 +51,6 @@ public class RegisterActivity extends AppCompatActivity {
                 showDatePickerDialog();
             }
         });
-
-        findViewsById();
     }
 
     private void findViewsById() {
@@ -135,8 +134,13 @@ public class RegisterActivity extends AppCompatActivity {
             return true;
         }
         //email check
-        if (email.equals(EMPTY_STRING) || Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (email.equals(EMPTY_STRING)) {
             emailET.setError("Incorrect Email Address");
+            emailET.requestFocus();
+            return true;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailET.setError("Email Address Pattern Doesn't Matches");
             emailET.requestFocus();
             return true;
         }
@@ -269,6 +273,8 @@ public class RegisterActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     isRegisterSuccess = true;
                     Toast.makeText(RegisterActivity.this, "User Authentication Successfull", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                    finish();
                 } else {
                     isRegisterSuccess = false;
                     Toast.makeText(RegisterActivity.this, "User Authentication Failed\n", Toast.LENGTH_SHORT).show();

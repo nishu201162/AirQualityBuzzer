@@ -25,8 +25,12 @@ public class welcomeActivity extends Activity {
             public void run() {
                 try {
                     //set sleep time
-                    sleep(3 * 1000);
-                    Intent intent = new Intent(welcomeActivity.this, LoginActivity.class);
+                    Intent intent = null;
+                    if (checkUserType()) {
+                        intent = new Intent(welcomeActivity.this, FunctionalitiesActivity.class);
+                    } else {
+                        intent = new Intent(welcomeActivity.this, LoginActivity.class);
+                    }
                     startActivity(intent);
                     finish();
                     //Intent i = new Intent(welcomeActivity.this, LoginActivity.class);
@@ -36,5 +40,15 @@ public class welcomeActivity extends Activity {
             }
         };
         splash.start();
+    }
+    
+    private boolean checkUserType() {
+        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", Context.MODE_PRIVATE);
+        String userType = sharedPreferences.getString("UserType", "Normal User");
+        if (userType.equals("BetaUser")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
